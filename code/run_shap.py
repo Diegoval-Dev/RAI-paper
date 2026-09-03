@@ -64,8 +64,8 @@ def main() -> None:
 
     shap_values = explainer(
         image_arrays,
-        max_evals=500,
-        batch_size=25,
+        max_evals=100,
+        batch_size=50,
         outputs=shap.Explanation.argsort.flip[:TOP_K_LABELS_TO_EXPLAIN],
     )
 

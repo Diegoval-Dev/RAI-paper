@@ -1,6 +1,8 @@
 shap
 torch
+torchvision
 transformers
 pillow
 numpy
 matplotlib
+opencv-python
