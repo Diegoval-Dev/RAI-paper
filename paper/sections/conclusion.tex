@@ -12,3 +12,15 @@ more specific target for improving robustness on confusable classes:
 curating or augmenting training data so the discriminating cue is
 consistently visible, rather than assuming the model needs to be redirected
 to a different region of the image entirely.
+
+We also resolved the specific open question our baseline resolution left
+about the model's use of fine-grained cues: refining SHAP to
+\texttt{max\_evals=400} on just the 5 error cases showed that our
+\texttt{max\_evals=100} baseline had genuinely understated the model's
+attention to a fine-grained feature in one case (the kit fox's ears), but
+accurately reflected the model's attention in the other four. Prediction
+errors in this study are therefore best explained by a mix of missing or
+ambiguous visual evidence in the source photo and weak-confidence
+tie-breaking between visually similar classes, not by a systematic failure
+of the model to look at the right feature, and not merely by an artifact of
+low-resolution SHAP attribution.

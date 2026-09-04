@@ -10,19 +10,74 @@ when it is obscured by lighting, crop, or shadow (as in the husky and
 jaguar images), the model falls back to a visually similar but incorrect
 class.
 
+\subsection{Closing the model-vs-resolution question}
+\label{sec:discussion-highres}
+
+Our original open question, raised in Section~\ref{sec:limitations} and by
+the kit fox case in particular, was whether the model was genuinely
+ignoring distinctive features like ear size or facial pattern, or whether
+\texttt{max\_evals=100}'s coarse superpixel grid was simply too blunt an
+instrument to show us that attention if it existed. The high-resolution
+refinement in Section~\ref{sec:highres} (\texttt{max\_evals=400},
+restricted to the 5 misclassified images) lets us answer this per case
+rather than only in the aggregate:
+
+\begin{itemize}
+  \item \textbf{Resolution artifact (1/5): kit fox.} At higher resolution,
+  attribution concentrates onto the ear/head region far more sharply than
+  the baseline map showed. This is a case where our original,
+  lower-resolution conclusion -- that we ``cannot tell'' whether the model
+  uses ear size -- undersold the model: it does place elevated importance
+  on the ear region, and the coarse grid at \texttt{max\_evals=100} had
+  blended that signal into a larger, less informative superpixel. The
+  kit-fox-to-grey-fox error is therefore better attributed to weak or
+  ambiguous evidence in that region (confidence 0.73, and the two species
+  do look alike in overall shape) than to the model failing to look at the
+  ears at all.
+  \item \textbf{Not a resolution artifact (4/5): tabby cat, tiger cat,
+  jaguar, husky.} For these four images, the refined, $4\times$
+  finer-grained map reproduces the same attribution pattern as the
+  baseline -- same region, same general shape of the heatmap, just more
+  spatial detail. No previously hidden feature (a coat pattern, an ear
+  shape) becomes visible under refinement. This means our original
+  descriptions of these four errors -- the model attending correctly to the
+  face/body but the discriminating cue being genuinely faint, cropped-out,
+  or shadowed in that source photo -- were not artifacts of SHAP's
+  resolution; they reflect what the model actually attended to.
+\end{itemize}
+
+Overall, this refinement pass supports a qualified answer to the question
+that motivated it: the low baseline resolution was a real limitation for
+one case out of five (kit fox), but not for the majority. Where the model's
+predictions were wrong, the dominant explanation across our error set is
+still that the discriminating cue was not usefully present in the region
+the model (correctly) attended to -- a property of the model/image pairing,
+not primarily an artifact of under-resolved SHAP attribution. We therefore
+no longer treat the kit fox case as an open question in
+Section~\ref{sec:limitations}: at \texttt{max\_evals=400} it resolves in
+favor of the model attending to the ears, just not decisively enough to
+override the shape and color similarity with grey fox.
+
 \subsection{Limitations}
 \label{sec:limitations}
 
 \textbf{Explainer resolution.} We use \texttt{shap.Explainer} with an
-\texttt{Image} masker and \texttt{max\_evals=100}, which produces a coarse
-superpixel grid (roughly $4\times4$ regions per image). This keeps runtime
-practical (about 30 seconds per image on CPU) but means fine-grained
-features -- ear size relative to head, individual whisker patterns -- are
-not resolved as distinct regions. The kit fox case in
-Section~\ref{sec:correct} illustrates this: we can say attribution falls on
-the head, but not whether it specifically falls on the ears. A finer masker
-grid or a higher \texttt{max\_evals} budget would sharpen this at the cost
-of substantially longer runtime.
+\texttt{Image} masker and \texttt{max\_evals=100} for our baseline pass,
+which produces a coarse superpixel grid (roughly $4\times4$ regions per
+image). This keeps runtime practical (about 30 seconds per image on CPU)
+but means fine-grained features -- ear size relative to head, individual
+whisker patterns -- are not resolved as distinct regions in that baseline
+pass. Rather than leave this as a purely hypothetical caveat, we
+selectively re-ran the 5 misclassified images at \texttt{max\_evals=400}
+(Section~\ref{sec:highres}) and found that this baseline-resolution
+limitation was concretely responsible for understating the model's
+attention to the ears in one case (kit fox), while the other four errors'
+attribution patterns held up unchanged under $4\times$ finer resolution
+(Section~\ref{sec:discussion-highres}). We did not run the full 22-image
+set at \texttt{max\_evals=400} due to runtime (roughly $4\times$ the
+baseline's per-image cost), so we cannot rule out that a correctly
+classified image would also show a sharper attribution pattern under
+refinement; our claim is limited to the 5 error cases we refined.
 
 \textbf{Blur masker as a perturbation choice.} SHAP's Image masker
 approximates "removing" a region by blurring it, not by deleting it. Blur

@@ -32,3 +32,22 @@ for that predicted label, and (3) save the resulting heatmap alongside the
 source image. This is implemented in \texttt{code/run\_shap.py} and driven
 end-to-end by \texttt{make loop} (fetch images, run SHAP, compile the
 paper).
+
+\textbf{High-resolution refinement of misclassified images.} To test
+whether \texttt{max\_evals=100} was itself responsible for any apparent
+failure of the model to attend to fine-grained discriminative features, we
+added a second mode to \texttt{code/run\_shap.py}
+(\texttt{--mode highres-errors}, also exposed as \texttt{make
+shap-highres}). This mode reads the baseline \texttt{logs/shap\_results.json}
+produced by the pass above, programmatically identifies the misclassified
+images (those whose true class name is not a substring of the model's
+predicted label), and re-runs \emph{only} those images through the same
+partition explainer and blur masker at \texttt{max\_evals=400} -- a
+$4\times$ finer superpixel budget. It writes its output to separate files
+(\texttt{paper/figures/shap\_highres\_<name>.png}) and does not modify the
+baseline figures or \texttt{logs/shap\_results.json}, so the two resolutions
+can be compared directly (Section~\ref{sec:highres}). We did not apply this
+higher budget to the full 22-image set because of runtime: each image took
+approximately $4\times$ longer to explain, which is only practical when
+restricted to the small number of images the added resolution is meant to
+clarify.
