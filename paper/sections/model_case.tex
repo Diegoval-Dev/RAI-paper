@@ -1,1 +1,32 @@
-% TODO: write model_case
+We use \texttt{facebook/convnext-tiny-224}, a ConvNeXt-Tiny image classifier
+pretrained on ImageNet-1k (1000 classes), accessed via the Hugging Face
+\texttt{transformers} library.
+
+Our explanatory question is: \emph{when the model confuses two visually
+similar classes, does it attend to the distinctive features a human would use
+(ear shape, fur pattern, beak), or does it rely on incidental cues?}
+
+To answer this at more than anecdotal scale, we assembled 10 groups of
+visually similar ImageNet classes (22 images total, one representative image
+per class), covering dogs, cats, birds, sharks, big cats, foxes, elephants,
+and bears:
+
+\begin{itemize}
+  \item \textbf{Dogs:} Siberian husky vs.\ Alaskan malamute
+  \item \textbf{Cats:} tabby cat vs.\ Egyptian cat vs.\ tiger cat
+  \item \textbf{Birds:} jay vs.\ magpie
+  \item \textbf{Sharks:} great white shark vs.\ tiger shark
+  \item \textbf{Big cats:} leopard vs.\ jaguar
+  \item \textbf{Foxes:} red fox vs.\ kit fox vs.\ grey fox
+  \item \textbf{Elephants:} Indian elephant vs.\ African elephant
+  \item \textbf{Bears:} American black bear vs.\ brown bear
+  \item \textbf{Terriers:} Yorkshire terrier vs.\ silky terrier
+  \item \textbf{Retrievers:} golden retriever vs.\ Labrador retriever
+\end{itemize}
+
+Image fetching is scripted (\texttt{code/fetch\_images.py}) and re-runs
+without re-downloading cached images, so the set can be extended by adding
+entries to the class-pair table. For each image we run the model, record the
+predicted label and confidence, and compute SHAP attributions over the
+predicted class using a partition explainer with image masking
+(\texttt{code/run\_shap.py}).

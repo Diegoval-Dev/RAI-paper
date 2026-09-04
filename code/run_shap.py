@@ -14,6 +14,8 @@ import torch
 from PIL import Image
 from transformers import AutoImageProcessor, AutoModelForImageClassification
 
+from fetch_images import CLASS_PAIRS
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 IMAGES_DIR = REPO_ROOT / "data" / "images"
 FIGURES_DIR = REPO_ROOT / "paper" / "figures"
@@ -23,6 +25,10 @@ MODEL_NAME = "facebook/convnext-tiny-224"
 TOP_K_LABELS_TO_EXPLAIN = 1
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+
+
+def build_group_lookup() -> dict[str, str]:
+    return {name: group for group, items in CLASS_PAIRS.items() for name, _ in items}
 
 
 def load_test_images() -> tuple[list[str], list[Image.Image]]:
@@ -53,6 +59,7 @@ def main() -> None:
     model = AutoModelForImageClassification.from_pretrained(MODEL_NAME).to(DEVICE).eval()
     id2label = model.config.id2label
 
+    group_lookup = build_group_lookup()
     names, images = load_test_images()
     image_arrays = np.stack([np.array(img.resize((224, 224))) for img in images])
 
@@ -79,6 +86,7 @@ def main() -> None:
         results.append(
             {
                 "image": name,
+                "group": group_lookup.get(name, "unknown"),
                 "predicted_label": id2label[top_idx],
                 "confidence": float(probs[i][top_idx]),
             }

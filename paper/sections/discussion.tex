@@ -1,1 +1,53 @@
-% TODO: write discussion
+Our results suggest that, for this model and this set of confusable
+classes, prediction errors are not generally explained by the model
+attending to the wrong part of the image. In every misclassified example we
+inspected, SHAP attribution fell on the animal itself rather than the
+background. Instead, errors appear linked to whether the specific texture
+cue that separates two similar classes -- coat pattern, facial marking --
+was visible and well-lit in the source image. When that cue is present (as
+in the correctly classified leopard image), the model gets the label right;
+when it is obscured by lighting, crop, or shadow (as in the husky and
+jaguar images), the model falls back to a visually similar but incorrect
+class.
+
+\subsection{Limitations}
+\label{sec:limitations}
+
+\textbf{Explainer resolution.} We use \texttt{shap.Explainer} with an
+\texttt{Image} masker and \texttt{max\_evals=100}, which produces a coarse
+superpixel grid (roughly $4\times4$ regions per image). This keeps runtime
+practical (about 30 seconds per image on CPU) but means fine-grained
+features -- ear size relative to head, individual whisker patterns -- are
+not resolved as distinct regions. The kit fox case in
+Section~\ref{sec:correct} illustrates this: we can say attribution falls on
+the head, but not whether it specifically falls on the ears. A finer masker
+grid or a higher \texttt{max\_evals} budget would sharpen this at the cost
+of substantially longer runtime.
+
+\textbf{Blur masker as a perturbation choice.} SHAP's Image masker
+approximates "removing" a region by blurring it, not by deleting it. Blur
+is a reasonable stand-in for occlusion, but it does not fully remove
+texture or color information the way a black/grey patch or inpainting
+would, so attribution magnitudes should be read as relative importance
+within our specific perturbation scheme rather than an absolute measure of
+feature necessity.
+
+\textbf{Single image per class.} Each class in our test set is represented
+by exactly one image. This is enough to demonstrate the method and to
+surface concrete, inspectable examples of correct and incorrect
+predictions, but it does not let us distinguish a class-level tendency from
+an artifact of that one photo's lighting, pose, or crop. The husky and
+jaguar errors we highlight could plausibly disappear on a better-lit photo
+of the same class.
+
+\textbf{Small, curated class set.} We selected 10 groups of classes because
+they are visually similar by inspection, not through a systematic
+similarity metric over the model's full confusion matrix. Our 23\% error
+rate on this set is therefore a statement about deliberately hard cases, not
+an estimate of the model's overall error rate.
+
+\textbf{Top-1 attribution only.} We compute SHAP attribution for the
+model's single top-predicted label. We do not inspect attribution for the
+"correct" label when the model is wrong, which could additionally show
+whether the true class was a close runner-up or effectively invisible to
+the model.

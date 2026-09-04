@@ -1,1 +1,22 @@
-% TODO: write introduction
+Deep image classifiers routinely reach high top-1 accuracy on benchmarks
+such as ImageNet, but high accuracy does not by itself tell us \emph{why} a
+model reaches a given prediction. This matters most at the margin: when a
+model confuses two visually similar classes, understanding what the model
+was actually looking at can reveal whether the error is a reasonable mistake
+(the model attended to the right region but a genuinely ambiguous or
+occluded cue) or a symptom of a shortcut (the model ignored the
+discriminating feature entirely).
+
+SHAP~\cite{lundberg2017unified} is a model-agnostic explanation method that
+assigns each input feature -- in our case, image regions -- a contribution
+score toward a specific output. Applied to image classification, SHAP
+attribution maps let us visually inspect which regions of an image pushed
+the model toward its predicted label.
+
+This paper asks a narrow, concrete question: \emph{when an image classifier
+confuses two visually similar classes, does SHAP show that the model
+attended to the feature a human would use to tell them apart (ear shape,
+coat pattern, beak shape), or does it attend elsewhere?} We answer this by
+building a small but systematic test set of confusable ImageNet class pairs,
+running a pretrained ConvNeXt-Tiny classifier, and inspecting SHAP
+attribution maps for both correct and incorrect predictions.

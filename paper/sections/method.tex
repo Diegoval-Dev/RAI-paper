@@ -1,1 +1,34 @@
-% TODO: write method
+\textbf{Model.} We use \texttt{facebook/convnext-tiny-224}
+(ConvNeXt-Tiny), pretrained on ImageNet-1k and served through the Hugging
+Face \texttt{transformers} library. All images are resized to
+$224\times224$ and passed through the model's standard image processor
+before inference.
+
+\textbf{SHAP explainer.} Because ConvNeXt-Tiny is not a simple
+gradient-friendly network in the sense required by SHAP's gradient-based
+explainers, we use \texttt{shap.Explainer} with a model-agnostic partition
+explainer over an \texttt{Image} masker configured with Gaussian blur
+(\texttt{blur(32,32)}). The masker perturbs the image by blurring out
+candidate superpixel regions and observes the resulting change in the
+model's softmax output for the predicted class; SHAP then attributes
+credit to each region based on its marginal contribution across many such
+maskings. We cap the explainer at \texttt{max\_evals=100} per image, which
+keeps runtime to roughly 30 seconds per image on CPU while still producing
+a stable coarse-grained attribution map.
+
+\textbf{Test set.} We selected 10 groups of ImageNet classes that are
+visually similar enough to be plausibly confused by a classifier and by
+a human at a glance: two dog breeds, three cat variants, two bird species,
+two shark species, two big cats, three fox species, two elephant species,
+two bear species, two terrier breeds, and two retriever breeds (22 images
+total, one representative image per class, drawn from a public ImageNet
+sample set). Image acquisition is scripted in
+\texttt{code/fetch\_images.py} so the set can be extended by adding entries
+to the class-pair table without changing the analysis code.
+
+\textbf{Pipeline.} For each image we (1) run the classifier and record the
+top-1 predicted label and confidence, (2) compute a SHAP attribution map
+for that predicted label, and (3) save the resulting heatmap alongside the
+source image. This is implemented in \texttt{code/run\_shap.py} and driven
+end-to-end by \texttt{make loop} (fetch images, run SHAP, compile the
+paper).

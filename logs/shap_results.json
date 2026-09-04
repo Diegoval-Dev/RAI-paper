@@ -1,7 +1,134 @@
 [
   {
-    "image": "dog",
-    "predicted_label": "Samoyed, Samoyede",
-    "confidence": 0.7088474035263062
+    "image": "african_elephant",
+    "group": "elephants",
+    "predicted_label": "African elephant, Loxodonta africana",
+    "confidence": 0.9183545112609863
+  },
+  {
+    "image": "american_black_bear",
+    "group": "bears",
+    "predicted_label": "American black bear, black bear, Ursus americanus, Euarctos americanus",
+    "confidence": 0.8755460977554321
+  },
+  {
+    "image": "brown_bear",
+    "group": "bears",
+    "predicted_label": "brown bear, bruin, Ursus arctos",
+    "confidence": 0.9202466607093811
+  },
+  {
+    "image": "egyptian_cat",
+    "group": "cats_tabby_egyptian",
+    "predicted_label": "Egyptian cat",
+    "confidence": 0.8736492395401001
+  },
+  {
+    "image": "golden_retriever",
+    "group": "retrievers",
+    "predicted_label": "golden retriever",
+    "confidence": 0.9192282557487488
+  },
+  {
+    "image": "great_white_shark",
+    "group": "sharks",
+    "predicted_label": "great white shark, white shark, man-eater, man-eating shark, Carcharodon carcharias",
+    "confidence": 0.9224185347557068
+  },
+  {
+    "image": "grey_fox",
+    "group": "foxes",
+    "predicted_label": "grey fox, gray fox, Urocyon cinereoargenteus",
+    "confidence": 0.8348586559295654
+  },
+  {
+    "image": "husky",
+    "group": "dogs_husky_malamute",
+    "predicted_label": "Tibetan mastiff",
+    "confidence": 0.5272830724716187
+  },
+  {
+    "image": "indian_elephant",
+    "group": "elephants",
+    "predicted_label": "Indian elephant, Elephas maximus",
+    "confidence": 0.8104178309440613
+  },
+  {
+    "image": "jaguar",
+    "group": "big_cats",
+    "predicted_label": "cougar, puma, catamount, mountain lion, painter, panther, Felis concolor",
+    "confidence": 0.8273072838783264
+  },
+  {
+    "image": "jay",
+    "group": "birds_jay_magpie",
+    "predicted_label": "jay",
+    "confidence": 0.9244354367256165
+  },
+  {
+    "image": "kit_fox",
+    "group": "foxes",
+    "predicted_label": "grey fox, gray fox, Urocyon cinereoargenteus",
+    "confidence": 0.7330376505851746
+  },
+  {
+    "image": "labrador_retriever",
+    "group": "retrievers",
+    "predicted_label": "Labrador retriever",
+    "confidence": 0.9284854531288147
+  },
+  {
+    "image": "leopard",
+    "group": "big_cats",
+    "predicted_label": "leopard, Panthera pardus",
+    "confidence": 0.844792366027832
+  },
+  {
+    "image": "magpie",
+    "group": "birds_jay_magpie",
+    "predicted_label": "magpie",
+    "confidence": 0.8721102476119995
+  },
+  {
+    "image": "malamute",
+    "group": "dogs_husky_malamute",
+    "predicted_label": "malamute, malemute, Alaskan malamute",
+    "confidence": 0.8929650187492371
+  },
+  {
+    "image": "red_fox",
+    "group": "foxes",
+    "predicted_label": "red fox, Vulpes vulpes",
+    "confidence": 0.7673935294151306
+  },
+  {
+    "image": "silky_terrier",
+    "group": "terriers",
+    "predicted_label": "silky terrier, Sydney silky",
+    "confidence": 0.8986843228340149
+  },
+  {
+    "image": "tabby_cat",
+    "group": "cats_tabby_egyptian",
+    "predicted_label": "Egyptian cat",
+    "confidence": 0.4579286575317383
+  },
+  {
+    "image": "tiger_cat",
+    "group": "cats_tabby_egyptian",
+    "predicted_label": "tabby, tabby cat",
+    "confidence": 0.3342397212982178
+  },
+  {
+    "image": "tiger_shark",
+    "group": "sharks",
+    "predicted_label": "tiger shark, Galeocerdo cuvieri",
+    "confidence": 0.8844745755195618
+  },
+  {
+    "image": "yorkshire_terrier",
+    "group": "terriers",
+    "predicted_label": "Yorkshire terrier",
+    "confidence": 0.7696684002876282
   }
 ]

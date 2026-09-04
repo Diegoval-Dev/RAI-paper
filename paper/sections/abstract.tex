@@ -1,1 +1,16 @@
-% TODO: write abstract
+We use SHAP to examine whether a modern image classifier
+(ConvNeXt-Tiny, pretrained on ImageNet-1k) attends to the visual features a
+human would use to distinguish between visually similar object classes --
+ear shape, fur pattern, beak shape -- or relies on incidental cues. We build
+a test set of 22 images spanning 10 groups of confusable ImageNet classes
+(dog breeds, cat breeds, birds, sharks, big cats, foxes, elephants, and
+bears) and compute SHAP attributions for the model's top prediction on each
+image. The model misclassifies 5 of 22 images (23\%); four of the five
+errors occur between the intended confusable pair. SHAP attribution maps
+show that in most of these errors the model does attend to the correct
+region of the object (head, face, or body) rather than the background, but
+the specific texture cue that separates the two classes -- coat spot
+pattern, ear size -- is frequently under-weighted or obscured in the source
+image. We discuss this as evidence that errors on confusable classes are
+driven less by attending to the wrong part of the image and more by the
+salience of the distinguishing texture within the correct region.

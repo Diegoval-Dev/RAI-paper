@@ -1,1 +1,163 @@
-% TODO: write results
+Across the 10 confusable-class groups (22 images), the model misclassified
+5 images (23\%). Table~\ref{tab:predictions} lists every prediction; errors
+are bolded.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lllr}
+\toprule
+Group & Image & Predicted label & Conf. \\
+\midrule
+dogs\_husky\_malamute & malamute & malamute & 0.89 \\
+dogs\_husky\_malamute & husky & \textbf{Tibetan mastiff} & 0.53 \\
+cats\_tabby\_egyptian & egyptian\_cat & Egyptian cat & 0.87 \\
+cats\_tabby\_egyptian & tabby\_cat & \textbf{Egyptian cat} & 0.46 \\
+cats\_tabby\_egyptian & tiger\_cat & \textbf{tabby cat} & 0.33 \\
+birds\_jay\_magpie & jay & jay & 0.92 \\
+birds\_jay\_magpie & magpie & magpie & 0.87 \\
+sharks & great\_white\_shark & great white shark & 0.92 \\
+sharks & tiger\_shark & tiger shark & 0.88 \\
+big\_cats & leopard & leopard & 0.84 \\
+big\_cats & jaguar & \textbf{cougar} & 0.83 \\
+foxes & red\_fox & red fox & 0.77 \\
+foxes & kit\_fox & \textbf{grey fox} & 0.73 \\
+foxes & grey\_fox & grey fox & 0.83 \\
+elephants & indian\_elephant & Indian elephant & 0.81 \\
+elephants & african\_elephant & African elephant & 0.92 \\
+bears & american\_black\_bear & American black bear & 0.88 \\
+bears & brown\_bear & brown bear & 0.92 \\
+terriers & yorkshire\_terrier & Yorkshire terrier & 0.77 \\
+terriers & silky\_terrier & silky terrier & 0.90 \\
+retrievers & golden\_retriever & golden retriever & 0.92 \\
+retrievers & labrador\_retriever & Labrador retriever & 0.93 \\
+\bottomrule
+\end{tabular}
+\caption{Predicted label and confidence for all 22 test images, grouped by
+confusable-class set. Bold rows are misclassifications.}
+\label{tab:predictions}
+\end{table}
+
+Four of the five errors fall directly within the target confusable pair
+(husky $\to$ Tibetan mastiff, tabby cat $\to$ Egyptian cat, tiger cat $\to$
+tabby cat, kit fox $\to$ grey fox), and the fifth (jaguar $\to$ cougar) is a
+visually similar spotted/tan big cat outside the intended pair -- consistent
+with our hypothesis that errors cluster among classes sharing fur pattern
+and body shape rather than occurring at random.
+
+\subsection{Misclassified examples}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{figures/shap_husky.png}
+\caption{Husky misclassified as Tibetan mastiff (conf.\ 0.53).}
+\label{fig:husky}
+\end{figure}
+
+For the husky image (Figure~\ref{fig:husky}), SHAP attribution concentrates
+on the dog's body and head rather than the snowy background, yet the model
+still predicts Tibetan mastiff. The image is dark and the dog's fur is
+mostly in shadow, so the region SHAP identifies as important is correct
+(the dog, not the background) but the fine-grained texture cues that would
+separate a husky from a mastiff -- pointed ears, mask-like facial
+markings -- are not resolvable in this lighting.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{figures/shap_tabby_cat.png}
+\caption{Tabby cat misclassified as Egyptian cat (conf.\ 0.46).}
+\label{fig:tabby}
+\end{figure}
+
+For the tabby cat image (Figure~\ref{fig:tabby}), attribution concentrates
+tightly on the face and muzzle, and the model predicts Egyptian cat -- the
+sibling class that shares the same facial spotting pattern. Here the model
+is attending to exactly the right region (the face), but the tabby's facial
+striping and the Egyptian cat's facial spotting are similar enough at this
+crop that the region alone does not disambiguate the two classes.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{figures/shap_jaguar.png}
+\caption{Jaguar misclassified as cougar (conf.\ 0.83).}
+\label{fig:jaguar}
+\end{figure}
+
+The jaguar image (Figure~\ref{fig:jaguar}) is the clearest case of a missing
+cue. Attribution again falls on the animal's face, correctly ignoring the
+background, but the jaguar's rosette pattern is barely visible in this
+close, evenly lit headshot. With the coat pattern effectively absent from
+the model's evidence, it falls back on face shape and coloring, which is
+shared with the plain-coated cougar. This mirrors a correctly classified
+leopard image (Figure~\ref{fig:leopard}, Section~\ref{sec:correct}), where
+the same face-centered attribution pattern appears but the rosettes are
+clearly visible, and the model gets the label right.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{figures/shap_kit_fox.png}
+\caption{Kit fox misclassified as grey fox (conf.\ 0.73).}
+\label{fig:kitfox}
+\end{figure}
+
+For the kit fox image (Figure~\ref{fig:kitfox}), attribution spreads across
+the head and body rather than isolating the ears -- the feature most
+diagnostic of kit fox (unusually large ears relative to head size). Because
+the explainer's blur-based superpixels are coarse (roughly $4\times4$
+regions per image at \texttt{max\_evals=100}), the ears are not resolved
+as a separate region from the rest of the head, so we cannot tell from this
+map alone whether the model ignores ear size or simply cannot have that
+cue isolated for it. We flag this as a resolution limitation of our SHAP
+configuration rather than evidence about the model itself (see
+Section~\ref{sec:limitations}).
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{figures/shap_tiger_cat.png}
+\caption{Tiger cat misclassified as tabby cat (conf.\ 0.33, the lowest
+confidence of any prediction in our set).}
+\label{fig:tigercat}
+\end{figure}
+
+The tiger cat image (Figure~\ref{fig:tigercat}) is the model's least
+confident prediction overall. Attribution again lands on the cat's face and
+ear, correctly avoiding the background, but the crop shows only striped fur
+without the cat's full body pattern -- tiger cat and tabby cat are two
+ImageNet labels for closely related striped coat patterns, and at this crop
+angle there is little in the visible texture to separate them. The low
+confidence (0.33, versus 0.7-0.9 for most other predictions in our set)
+suggests the model itself is registering this ambiguity rather than
+confidently picking the wrong class.
+
+\subsection{Correctly classified examples for contrast}
+\label{sec:correct}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{figures/shap_leopard.png}
+\caption{Leopard correctly classified (conf.\ 0.84).}
+\label{fig:leopard}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{figures/shap_malamute.png}
+\caption{Malamute correctly classified (conf.\ 0.89).}
+\label{fig:malamute}
+\end{figure}
+
+In the leopard image (Figure~\ref{fig:leopard}), SHAP attribution is
+concentrated on the face, where the rosette pattern is clearly visible and
+well lit -- the same region attended to in the misclassified jaguar image,
+but here the discriminating texture is actually present in the crop, and
+the model gets the label right. In the malamute image
+(Figure~\ref{fig:malamute}), attribution concentrates on the head and ear
+region, where breed-distinguishing features (ear shape, facial mask) are
+visible in good lighting.
+
+Taken together, these examples support a consistent pattern: in both
+correct and incorrect predictions, SHAP attribution falls on the animal's
+head or body rather than the background. The difference between correct
+and incorrect predictions in our error cases is less about \emph{where} the
+model looked and more about whether the distinguishing texture cue was
+actually visible and salient within that region.

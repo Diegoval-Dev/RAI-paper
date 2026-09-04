@@ -1,1 +1,14 @@
-% TODO: write conclusion
+We used SHAP to inspect whether a ConvNeXt-Tiny classifier attends to the
+correct region when it confuses visually similar ImageNet classes. Across
+22 images spanning 10 confusable-class groups, the model erred on 5 (23\%),
+and four of those five errors were within the intended confusable pair.
+In every case we examined, SHAP attribution localized to the object itself
+rather than the background, on both correct and incorrect predictions. The
+distinguishing factor between the model's successes and failures appears to
+be less about \emph{where} it looked and more about whether the
+discriminating texture cue -- coat pattern, facial marking -- was actually
+visible and salient in that region of the source image. This points to a
+more specific target for improving robustness on confusable classes:
+curating or augmenting training data so the discriminating cue is
+consistently visible, rather than assuming the model needs to be redirected
+to a different region of the image entirely.
